@@ -26,31 +26,31 @@ class ExecutableBuilder:
         for directory in [self.dist_dir, self.build_dir]:
             if directory.exists():
                 shutil.rmtree(directory)
-                print(f"    Supprimé: {directory}")
+                print(f"   ✓ Supprimé: {directory}")
         
         # Supprimer les fichiers spec
         for spec_file in self.root_dir.glob("*.spec"):
             spec_file.unlink()
-            print(f"    Supprimé: {spec_file}")
+            print(f"   ✓ Supprimé: {spec_file}")
     
     def check_pyinstaller(self):
         """Vérifie que PyInstaller est installé."""
-        print("\n Vérification de PyInstaller...")
+        print("\n📦 Vérification de PyInstaller...")
         
         try:
             import PyInstaller
-            print(f"    PyInstaller {PyInstaller.__version__} détecté")
+            print(f"   ✓ PyInstaller {PyInstaller.__version__} détecté")
             return True
         except ImportError:
-            print("    PyInstaller non détecté")
+            print("   ✗ PyInstaller non détecté")
             print("\n   Installation de PyInstaller...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
-            print("    PyInstaller installé")
+            print("   ✓ PyInstaller installé")
             return True
     
     def create_launcher_script(self):
         """Crée un script de lancement qui gère LaTeX."""
-        print("\n Création du script de lancement...")
+        print("\n📝 Création du script de lancement...")
         
         launcher_content = '''#!/usr/bin/env python3
 """
@@ -140,15 +140,14 @@ if __name__ == "__main__":
     
     def build_windows(self):
         """Construit l'exécutable Windows."""
-        print("\n Construction de l'exécutable Windows...")
+        print("\n🪟 Construction de l'exécutable Windows...")
         
         cmd = [
             sys.executable,
             '-m', 'PyInstaller',
-            '--name=AutoPV_CBB',
+            '--name=ConvertisseurDocxLatex',
             '--onefile',
             '--windowed',
-            '--icon=NONE',
             '--add-data=config.py;.',
             '--add-data=converter.py;.',
             '--add-data=gui.py;.',
@@ -168,15 +167,13 @@ if __name__ == "__main__":
     
     def build_macos(self):
         """Construit l'exécutable macOS."""
-        print("\n Construction de l'application macOS...")
+        print("\n🍎 Construction de l'application macOS...")
         
         cmd = [
             sys.executable,
             '-m', 'PyInstaller',
-            '--name=AutoPV_CBB',
-            '--onefile',
+            '--name=ConvertisseurDocxLatex',
             '--windowed',
-            '--icon=NONE',
             '--add-data=config.py:.',
             '--add-data=converter.py:.',
             '--add-data=gui.py:.',
@@ -197,7 +194,7 @@ if __name__ == "__main__":
     
     def create_readme(self):
         """Crée un fichier README pour les utilisateurs."""
-        print("\n Création du README...")
+        print("\n📄 Création du README...")
         
         readme_content = """# Convertisseur DocX vers LaTeX/PDF
 
@@ -272,7 +269,7 @@ Pour une expérience complète, l'installation de LaTeX est fortement recommand�
     def build(self):
         """Lance le processus de build complet."""
         print("=" * 60)
-        print(" Construction de l'exécutable")
+        print("🚀 Construction de l'exécutable")
         print("=" * 60)
         
         # Nettoyage
@@ -291,7 +288,7 @@ Pour une expérience complète, l'installation de LaTeX est fortement recommand�
             elif self.system == "Darwin":  # macOS
                 self.build_macos()
             else:
-                print(f"\n Système non supporté: {self.system}")
+                print(f"\n❌ Système non supporté: {self.system}")
                 print("   Ce script supporte uniquement Windows et macOS")
                 return False
             
@@ -299,22 +296,22 @@ Pour une expérience complète, l'installation de LaTeX est fortement recommand�
             self.create_readme()
             
             print("\n" + "=" * 60)
-            print(" BUILD RÉUSSI!")
+            print("✅ BUILD RÉUSSI!")
             print("=" * 60)
-            print(f"\n Exécutable disponible dans: {self.dist_dir}")
+            print(f"\n📁 Exécutable disponible dans: {self.dist_dir}")
             
             if self.system == "Windows":
                 print("   → ConvertisseurDocxLatex.exe")
             else:
                 print("   → ConvertisseurDocxLatex.app")
             
-            print("\n  IMPORTANT: LaTeX doit être installé séparément!")
+            print("\n⚠️  IMPORTANT: LaTeX doit être installé séparément!")
             print("   Consultez le fichier README.txt pour les instructions.")
             
             return True
             
         except subprocess.CalledProcessError as e:
-            print(f"\n Erreur lors du build: {e}")
+            print(f"\n❌ Erreur lors du build: {e}")
             return False
         finally:
             # Nettoyage du launcher temporaire
@@ -325,17 +322,17 @@ def main():
     """Point d'entrée principal."""
     builder = ExecutableBuilder()
     
-    print("\n  Système détecté:", platform.system())
-    print(" Python version:", sys.version.split()[0])
+    print("\n⚙️  Système détecté:", platform.system())
+    print("🐍 Python version:", sys.version.split()[0])
     print()
     
     success = builder.build()
     
     if success:
-        input("\nSuccess : Appuyez sur Entrée pour quitter...")
+        input("\n✨ Appuyez sur Entrée pour quitter...")
         sys.exit(0)
     else:
-        input("\nFail : Appuyez sur Entrée pour quitter...")
+        input("\n💥 Appuyez sur Entrée pour quitter...")
         sys.exit(1)
 
 if __name__ == "__main__":
