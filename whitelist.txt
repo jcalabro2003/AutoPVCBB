@@ -1,0 +1,22 @@
+# Whitelist: un mot ou une expression par ligne
+# Les entrées ici ne seront pas modifiées par la correction automatique
+Cm !
+Cs !
+CM !
+CS !
+F.
+le X
+CBB
+io vivat
+PGCA
+CBBQ
+CMF
+XX
+XXX
+XXXX
+FM
+tapette
+réunion ex
+band
+peye
+Sam’saoule

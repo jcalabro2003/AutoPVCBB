@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide d'utilisation - Convertisseur DocX vers PDF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning::before {
+            content: "⚠️ ";
+            font-size: 1.5em;
+        }
+
+        .tip {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .tip::before {
+            content: "💡 ";
+            font-size: 1.5em;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success::before {
+            content: "✅ ";
+            font-size: 1.5em;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+            font-size: 0.9em;
+        }
+
+        .file-structure {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .file-structure .folder {
+            color: #66d9ef;
+        }
+
+        .file-structure .file {
+            color: #a6e22e;
+        }
+
+        .button-demo {
+            display: inline-block;
+            background: green;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s;
+        }
+
+        .button-demo:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .screenshot-placeholder {
+            background: #e9ecef;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 60px;
+            text-align: center;
+            margin: 20px 0;
+            color: #6c757d;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 Convertisseur DocX vers PDF</h1>
+            <p>Guide complet d'installation et d'utilisation</p>
+        </header>
+
+        <div class="content">
+            <!-- Introduction -->
+            <div class="section">
+                <h2>🎯 Qu'est-ce que c'est ?</h2>
+                <p>Cette application convertit automatiquement vos documents Word (.docx) en fichiers PDF avec une mise en page LaTeX optimisée. Elle a été conçue pour le traitement des PVs de RC. Elle fonctionne plus ou moins pour les interviews. J'ai pas essayé pour les PVs de kneipen.</p>
+            </div>
+
+            <!-- Installation -->
+            <div class="section">
+                <h2>💾 Installation</h2>
+
+
+                <h3>Étape 1 : Télécharger l'application</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Télécharge</strong> le dossier complet de l'application sur ton ordinateur.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Décompresse</strong> le fichier ZIP si nécessaire (clic droit > Extraire tout).
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Place</strong> le dossier où tu veux (par exemple : <code>C:\MesApplications\Convertisseur</code>).
+                </div>
+
+                <h3>Étape 2 : Premier lancement (Installation automatique)</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Double-clique</strong> sur le fichier <code>LANCER-ICI-WINDOWS.bat</code> si t'es sur Windows ou <code>LANCER-ICI-MACOS.sh</code> si t'es sur MAC.
+                </div>
+
+                <div class="warning">
+                    <strong>Attention :</strong>
+                    <ul>
+                        <li>
+                            <strong>Sur Windows :</strong> Il est possible que Windows empêche l'exécution du script. Dans ce cas :
+                            <ul>
+                                <li>Fais un clic droit sur le fichier <code>LANCER-ICI-WINDOWS.bat</code></li>
+                                <li>Sélectionne "Propriétés"</li>
+                                <li>Coche "Débloquer" en bas de la fenêtre</li>
+                                <li>Clique sur "OK" et relance le script</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Sur MacOS :</strong> Il est possible que tu doives autoriser l'exécution du script :
+                            <ul>
+                                <li>Va dans Préférences Système > Sécurité et confidentialité</li>
+                                <li>Autorise l'exécution du script si nécessaire</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Attends</strong> que les installations automatiques se fassent :
+                    <ul>
+                        <li>Installation de Python (si absent) - environ 2 minutes</li>
+                        <li>Installation de MiKTeX (LaTeX) (si absent) - environ 10-20 minutes</li>
+                        <li>Installation des dépendances Python - environ 1 minute</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>Important :</strong> La première fois peut prendre jusqu'à 30 minutes selon ta connexion Internet. Les lancements suivants seront bien plus rapides !
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Attends</strong> que la fenêtre de l'application s'ouvre automatiquement.
+                </div>
+
+                <div class="success">
+                    <strong>C'est terminé !</strong> L'application est maintenant installée et prête à l'emploi.
+                </div>
+            </div>
+
+            <!-- Utilisation -->
+            <div class="section">
+                <h2>🖱️ Utilisation</h2>
+
+                <h3>Méthode 1 : Glisser-déposer</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Ouvre</strong> ton explorateur de fichiers et localisez vos fichiers .docx.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Glisse</strong> tes fichiers .docx directement dans la zone grise de l'application (zone "Glissez vos fichiers .docx ici").
+                </div>
+
+                <div class="screenshot-placeholder">
+                    🖼️ Zone de glisser-déposer<br>
+                    Déposez vos fichiers ici !
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Clique</strong> sur le bouton <span class="button-demo">▶ Convertir</span>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Patiente</strong> pendant la conversion (Tu verras la progression dans le journal).
+                </div>
+
+                <h3>Méthode 2 : Parcourir les fichiers</h3>
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Clique</strong> sur le bouton <span class="button-demo">📂 Parcourir</span>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Sélectionne</strong> un ou plusieurs fichiers .docx dans la fenêtre qui s'ouvre.
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Clique</strong> sur "Ouvrir" puis sur <span class="button-demo">▶ Convertir</span>
+                </div>
+
+                <h3>Où trouver les fichiers convertis ?</h3>
+                <p>Les fichiers générés sont sauvegardés dans des dossiers créés automatiquement :</p>
+                <div class="file-structure">
+                    <div>
+                        <span class="folder">📁 Auto_PV/</span>
+                    </div>
+                    <div style="margin-left: 20px;">
+                        ├── <span class="folder">📁 LaTeX/</span> <span style="color: #bbb;">← Fichiers .tex (code LaTeX)</span>
+                        <div style="margin-left: 20px;">
+                            └── <span class="folder">📁 images/</span> <span style="color: #bbb;">← Images extraites</span>
+                        </div>
+                        └── <span class="folder">📁 PDF/</span> <span style="color: #bbb;">← 🎯 Les fichiers PDF finaux</span>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <strong>Astuce :</strong> Les fichiers PDF portent le même nom que les fichiers .docx originaux.
+                </div>
+            </div>
+
+            <!-- Fonctionnalités -->
+            <div class="section">
+                <h2>✨ Fonctionnalités implémentées</h2>
+
+                <h3>Correction automatique</h3>
+                <p>L'application corrige automatiquement :</p>
+                <ul>
+                    <li>Les fautes d'orthographe</li>
+                    <li>Les erreurs de grammaire</li>
+                    <li>Les problèmes de ponctuation</li>
+                    <li>Les abréviations courantes</li>
+                </ul>
+
+                <h3>Traitement des tableaux</h3>
+                <p>Les tableaux du document Word sont automatiquement convertis en tableaux LaTeX.</p>
+
+                <h3>Gestion des images</h3>
+                <p>Les images sont extraites et intégrées dans le PDF final avec leurs dimensions d'origine.</p>
+
+                <h3>Format personnalisé pour les PV</h3>
+                <p>L'application reconnaît automatiquement le format des PV et génère :</p>
+                <ul>
+                    <li>En-tête avec date et numéro de RC</li>
+                    <li>Table des matières (ordre du jour)</li>
+                    <li>Liste des présents en colonnes</li>
+                    <li>Sections numérotées automatiquement</li>
+                </ul>
+            </div>
+
+            <!-- Conseils -->
+            <div class="section">
+                <h2>💡 Conseils d'utilisation</h2>
+
+                <div class="tip">
+                    <strong>Important :</strong>
+                    <ul>
+                        <li>Respecte le format "PV RC X - Anno LIX - YYYY-MM-DD" pour les titres de PV</li>
+                        <li>Ferme tes fichiers Word avant la conversion</li>
+                        <li>Garde tes fichiers .docx dans un dossier accessible</li>
+                        <li>Respecte la structure du template pour que la conversion fonctionne correctement.</li>
+                        <li>La correction automatique utilise un modèle d'IA. Il est possible qu'il y ait des erreurs un peu randoms. Dans ce cas, relance simplement la conversion, ça peut régler le problème</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <strong>À éviter :</strong>
+                    <ul>
+                        <li>Parfois, google docs crée une tabulation automatique pour le titre d'une section ou sous section. Il est important de l'enlever, sinon le convertisseur ne détecte pas correctement les titres de sections. <strong> Solution : </strong>Démarer toutes les sections par "<strong>9) Titre de la section</strong>" et les sous sections par "><strong>s) Titre de la sous-section</strong>". Le convertisseur appliquera le bon numéro de (sous)section automatiquement.</li>
+                        <li>Ne change pas le mot "<strong>Présents :</strong>" en début de document ni les caractères "<strong>____</strong>" après la liste de présences.</li>
+                        <li>Ne mets pas d'espace entre "<strong>Présents :</strong>" et la liste des présences juste en dessous.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+
+             <div class="section">
+                <h2>🔧 Configuration de base</h2>
+
+                <p>Il existe 4 fichiers qui peuvent améliorer la configuration :</p>
+                <ul>
+                    <li><code>abbreviations.txt</code> : pour les abréviations</li>
+                    <li><code>special_chars.txt</code> : pour les caractères spéciaux LaTeX</li>
+                    <li><code>whitelist.txt</code> : pour les mots à ne pas corriger</li>
+                    <li><code>prompt.txt</code> : pour le prompt de correction</li>
+                </ul>
+                <p> Tu peux ajouter tes propres abréviations, caractères spéciaux et mots à ne pas corriger. Tu peux également ajuster le prompt de correction. <strong>Veille à bien respecter la structure des fichiers.</strong></p>
+             </div>
+            <div class="section">
+                <h2>⚙️ Configuration avancée (optionnel)</h2>
+
+                <p>
+                    <a href="#" id="toggle-advanced" aria-expanded="false">Afficher les options avancées</a>
+                </p>
+
+                <div id="advanced-options" style="display: none; margin-top: 10px;">
+                    <h3>Changer le logo</h3>
+                    <div class="step">
+                        Remplace le fichier <code>logo.png</code> dans le dossier principal par l'image que tu veux (format PNG recommandé). Il doit toujours s'appeler <code>logo.png</code>.
+                    </div>
+
+                    <h3>Modifier la clé API Cohere</h3>
+                    <div class="step">
+                        Ouvrez le fichier <code>config.py</code> et modifiez la ligne :<br>
+                        <code>os.getenv('COHERE_API_KEY', 'votre_clé_ici')</code>
+                    </div>
+
+                    <h3>Modifier le modèle de Cohere</h3>
+                    <div class="step">
+                        Si tu veux un modèle plus récent pour que la correction soit meilleure, ouvre le fichier <code>config.py</code> et modifie la ligne :<br>
+                        <code>self.COHERE_MODEL = 'votre_modèle_ici'</code>
+                    </div>
+
+                    <div class="warning">
+                        <strong>Attention :</strong> Les modifications des fichiers de configuration peuvent empêcher l'application de fonctionner. Faites une sauvegarde avant toute modification !
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>📧 Pour toute question ou problème, n'hésite pas à me contacter: julien.cala0@gmail.com.</p>
+            <p style="margin-top: 10px; opacity: 0.7;">Version 1.0</p>
+        </footer>
+    </div>
+        <script>
+            (function(){
+                var toggle = document.getElementById('toggle-advanced');
+                var adv = document.getElementById('advanced-options');
+                if(!toggle || !adv) return;
+                function updateText(){
+                    var shown = adv.style.display !== 'none';
+                    toggle.textContent = shown ? 'Masquer les options avancées' : 'Afficher les options avancées';
+                    toggle.setAttribute('aria-expanded', String(shown));
+                }
+                toggle.addEventListener('click', function(e){
+                    e.preventDefault();
+                    adv.style.display = (adv.style.display === 'none' || adv.style.display === '') ? 'block' : 'none';
+                    updateText();
+                });
+                // initial state
+                adv.style.display = 'none';
+                updateText();
+            })();
+        </script>
+</body>
+</html>

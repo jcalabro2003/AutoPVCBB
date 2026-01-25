@@ -1,0 +1,13 @@
+# Abbreviations (format: pattern => replacement)
+# Les patterns peuvent être des expressions régulières (ex: \bqqch\b => quelque chose)
+# Lignes vides et lignes commençant par # sont ignorées
+\bbitw\b => interview
+\bdeleg\b => délégation
+\bdéleg\b => délégation
+\bdélég\b => délégation
+\bqqch\b => quelque chose
+\bqqun\b => quelqu'un
+\bpcq\b => parce que
+\bprez\b => président
+\btrez\b => trésorier
+\bvp\b => vice-président

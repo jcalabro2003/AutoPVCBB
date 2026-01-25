@@ -1,0 +1,32 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# LaTeX
+*.aux
+*.log
+*.pdf
+*.tex
+LaTeX/
+PDF/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+# Prompt template for correction. Use {text} where the text to correct will be inserted,
+# and {whitelist} to include the whitelist words (comma-separated) if desired.
+
+Corrige le texte suivant en français :
+- Corrige les fautes d'orthographe, de grammaire, de ponctuation, de conjugaison et la concordance des temps.
+- Améliore la syntaxe et la clarté.
+- Ne modifie pas les noms propres, les anglicismes ni le latin (ex : io vivat).
+- Ne modifie pas les mots suivants : {whitelist}.
+
+Ta réponse doit UNIQUEMENT contenir le texte corrigé, sans explications ni commentaires.
+
+Texte à corriger :
+
+{text}

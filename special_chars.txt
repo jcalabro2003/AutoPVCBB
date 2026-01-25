@@ -1,0 +1,16 @@
+# Caractères spéciaux LaTeX (format: char => replacement)
+# Exemple : & => \&
+# Utilisez la forme qui sera insérée dans le document LaTeX
+& => \&
+% => \%
+$ => \$
+# => \#
+_ => \_
+{ => \{
+} => \}
+~ => \textasciitilde{}
+^ => \textasciicircum{}
+€ => \euro{}
+< => \textless{}
+> => \textgreater{}
+° => \textdegree{}
