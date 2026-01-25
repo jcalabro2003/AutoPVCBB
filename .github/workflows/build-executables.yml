@@ -1,0 +1,137 @@
+# .github/workflows/build-executables.yml
+name: Build Executables
+
+on:
+  push:
+    tags:
+      - 'v*'  # Déclenche sur les tags version (ex: v1.0.0)
+  workflow_dispatch:  # Permet de lancer manuellement
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Windows executable
+      run: python build_executable.py
+    
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ConvertisseurDocxLatex-Windows
+        path: dist/ConvertisseurDocxLatex.exe
+    
+    - name: Upload README
+      uses: actions/upload-artifact@v3
+      with:
+        name: ConvertisseurDocxLatex-Windows
+        path: dist/README.txt
+
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build macOS application
+      run: python build_executable.py
+    
+    - name: Create DMG (optional)
+      run: |
+        # Créer un dossier pour le DMG
+        mkdir -p dmg
+        cp -r "dist/ConvertisseurDocxLatex.app" dmg/
+        cp dist/README.txt dmg/
+        
+        # Créer le DMG
+        hdiutil create -volname "Convertisseur DocX LaTeX" \
+                       -srcfolder dmg \
+                       -ov -format UDZO \
+                       ConvertisseurDocxLatex.dmg
+    
+    - name: Upload macOS artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ConvertisseurDocxLatex-macOS
+        path: |
+          dist/ConvertisseurDocxLatex.app
+          dist/README.txt
+    
+    - name: Upload DMG
+      uses: actions/upload-artifact@v3
+      with:
+        name: ConvertisseurDocxLatex-macOS-DMG
+        path: ConvertisseurDocxLatex.dmg
+
+  create-release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Create ZIP archives
+      run: |
+        cd ConvertisseurDocxLatex-Windows
+        zip -r ../ConvertisseurDocxLatex-Windows.zip *
+        cd ..
+        
+        cd ConvertisseurDocxLatex-macOS
+        zip -r ../ConvertisseurDocxLatex-macOS.zip *
+        cd ..
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ConvertisseurDocxLatex-Windows.zip
+          ConvertisseurDocxLatex-macOS.zip
+          ConvertisseurDocxLatex-macOS-DMG/ConvertisseurDocxLatex.dmg
+        body: |
+          ## Convertisseur DocX vers LaTeX/PDF
+          
+          ### Installation
+          
+          **Windows:**
+          1. Téléchargez `ConvertisseurDocxLatex-Windows.zip`
+          2. Extrayez et lancez `ConvertisseurDocxLatex.exe`
+          3. Installez MiKTeX si demandé (voir README.txt)
+          
+          **macOS:**
+          1. Téléchargez `ConvertisseurDocxLatex.dmg`
+          2. Ouvrez le DMG et glissez l'app dans Applications
+          3. Installez BasicTeX si demandé (voir README.txt)
+          
+          ### Notes
+          - LaTeX doit être installé séparément pour générer des PDF
+          - Consultez README.txt pour les instructions détaillées
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
