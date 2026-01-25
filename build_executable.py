@@ -301,9 +301,9 @@ Pour une expérience complète, l'installation de LaTeX est fortement recommand�
             print(f"\n Exécutable disponible dans: {self.dist_dir}")
             
             if self.system == "Windows":
-                print("   → ConvertisseurDocxLatex.exe")
+                print("    ConvertisseurDocxLatex.exe")
             else:
-                print("   → ConvertisseurDocxLatex.app")
+                print("    ConvertisseurDocxLatex.app")
             
             print("\n  IMPORTANT: LaTeX doit être installé séparément!")
             print("   Consultez le fichier README.txt pour les instructions.")
