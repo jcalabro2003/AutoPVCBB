@@ -140,7 +140,7 @@ if __name__ == "__main__":
     
     def build_windows(self):
         """Construit l'exécutable Windows."""
-        print("\n🪟 Construction de l'exécutable Windows...")
+        print("\n Construction de l'exécutable Windows...")
         
         cmd = [
             sys.executable,
@@ -329,10 +329,10 @@ def main():
     success = builder.build()
     
     if success:
-        input("\n Appuyez sur Entrée pour quitter...")
+        print("Success!\n")
         sys.exit(0)
     else:
-        input("\n Appuyez sur Entrée pour quitter...")
+        print("Failed!\n")
         sys.exit(1)
 
 if __name__ == "__main__":
