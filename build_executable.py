@@ -237,6 +237,23 @@ if __name__ == "__main__":
   1. Faites clic droit sur l'application > Ouvrir
   2. Confirmez l'ouverture
 
+## IMPORTANT - Emplacement des fichiers générés
+
+### Windows
+Les fichiers sont créés dans le dossier de l'application :
+- `LaTeX/` : fichiers .tex
+- `PDF/` : fichiers PDF
+
+### macOS
+Les fichiers sont créés dans votre dossier Documents :
+- `~/Documents/ConvertisseurDocxLatex/LaTeX/` : fichiers .tex
+- `~/Documents/ConvertisseurDocxLatex/PDF/` : fichiers PDF
+
+Pour y accéder :
+1. Ouvrez le Finder
+2. Allez dans Documents
+3. Cherchez le dossier "ConvertisseurDocxLatex"
+
 ## Fonctionnalités
 
 - Glissez-déposez vos fichiers .docx dans l'interface
@@ -329,10 +346,10 @@ def main():
     success = builder.build()
     
     if success:
-        print("Success!\n")
+        input("\nSuccess Appuyez sur Entrée pour quitter...")
         sys.exit(0)
     else:
-        print("Failed!\n")
+        input("\n Fail: Appuyez sur Entrée pour quitter...")
         sys.exit(1)
 
 if __name__ == "__main__":
