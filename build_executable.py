@@ -346,10 +346,10 @@ def main():
     success = builder.build()
     
     if success:
-        input("\nSuccess Appuyez sur Entrée pour quitter...")
+        print("\nSuccess Appuyez sur Entrée pour quitter...")
         sys.exit(0)
     else:
-        input("\n Fail: Appuyez sur Entrée pour quitter...")
+        print("\n Fail: Appuyez sur Entrée pour quitter...")
         sys.exit(1)
 
 if __name__ == "__main__":
