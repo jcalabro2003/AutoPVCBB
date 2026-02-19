@@ -1,5 +1,6 @@
 """
 converter.py - Module principal de conversion DocX vers LaTeX
+PATCH: Solution robuste pour macOS read-only filesystem
 """
 
 from docx import Document
@@ -8,6 +9,8 @@ import re
 import logging
 import subprocess
 import os
+import sys
+import tempfile
 from typing import List, Optional, Tuple
 
 from utils import TextProcessor, DocumentParser, TableProcessor
@@ -15,6 +18,67 @@ from latex_generator import LaTeXGenerator
 from text_corrector import TextCorrector
 
 logger = logging.getLogger(__name__)
+
+def get_writable_output_dir():
+    """
+    Retourne un dossier accessible en écriture de manière robuste.
+    Teste plusieurs emplacements et retourne le premier qui fonctionne.
+    """
+    # Liste des emplacements à tester, par ordre de préférence
+    possible_dirs = []
+    
+    if sys.platform == 'darwin':  # macOS
+        home = Path.home()
+        possible_dirs = [
+            home / "Documents" / "ConvertisseurDocxLatex",
+            home / "Desktop" / "ConvertisseurDocxLatex",
+            home / "Downloads" / "ConvertisseurDocxLatex",
+            Path(tempfile.gettempdir()) / "ConvertisseurDocxLatex",
+        ]
+    elif sys.platform == 'win32':  # Windows
+        if getattr(sys, 'frozen', False):
+            # Exécutable : à côté de l'exe
+            possible_dirs = [Path(sys.executable).parent]
+        else:
+            # Script : à côté du script
+            possible_dirs = [Path(__file__).parent.resolve()]
+        
+        # Ajouter aussi Documents comme fallback
+        home = Path.home()
+        possible_dirs.append(home / "Documents" / "ConvertisseurDocxLatex")
+    else:  # Linux
+        home = Path.home()
+        possible_dirs = [
+            Path(__file__).parent.resolve(),
+            home / "Documents" / "ConvertisseurDocxLatex",
+            Path(tempfile.gettempdir()) / "ConvertisseurDocxLatex",
+        ]
+    
+    # Tester chaque emplacement
+    for directory in possible_dirs:
+        try:
+            # Tenter de créer le dossier
+            directory.mkdir(parents=True, exist_ok=True)
+            
+            # Tester l'écriture avec un fichier temporaire
+            test_file = directory / ".write_test"
+            test_file.write_text("test")
+            test_file.unlink()
+            
+            # Si on arrive ici, le dossier est accessible en écriture
+            logger.info(f"Dossier de sortie accessible: {directory}")
+            return directory
+            
+        except (OSError, PermissionError) as e:
+            logger.debug(f" Dossier non accessible: {directory} - {e}")
+            continue
+    
+    # Si aucun dossier ne fonctionne, utiliser le dossier temporaire système
+    fallback = Path(tempfile.gettempdir()) / "ConvertisseurDocxLatex"
+    logger.warning(f" Utilisation du dossier temporaire: {fallback}")
+    fallback.mkdir(parents=True, exist_ok=True)
+    return fallback
+
 
 class DocxToLatexConverter:
     """Convertisseur principal de documents DocX vers LaTeX."""
@@ -25,6 +89,10 @@ class DocxToLatexConverter:
         self.latex_generator = LaTeXGenerator(config, self.text_processor)
         self.text_corrector = TextCorrector(config)
         self.table_processor = TableProcessor()
+        
+        # Déterminer le dossier de sortie une seule fois à l'initialisation
+        self.output_base_dir = get_writable_output_dir()
+        logger.info(f" Dossier de sortie configuré: {self.output_base_dir}")
     
     def convert(self, docx_path: str, latex_path: str, compile_pdf: bool = True) -> Optional[str]:
         """
@@ -32,77 +100,88 @@ class DocxToLatexConverter:
         
         Args:
             docx_path: Chemin du fichier DocX source
-            latex_path: Chemin du fichier LaTeX de sortie
+            latex_path: Chemin du fichier LaTeX de sortie (ignoré, on utilise output_base_dir)
             compile_pdf: Si True, compile également le LaTeX en PDF
 
+        Returns:
+            Chemin du PDF ou du .tex généré
         """
-        logger.info(f"Début de la conversion: {docx_path} -> {latex_path}")
-        
-        # Charger le document
-        doc = Document(docx_path)
+        try:
+            logger.info(f" Début de la conversion: {Path(docx_path).name}")
+            
+            # Charger le document
+            doc = Document(docx_path)
 
-        # Extraire le titre du document
-        doc_title = Path(docx_path).stem
+            # Extraire le titre du document
+            doc_title = Path(docx_path).stem
 
-        # Préparer dossiers de sortie (LaTeX et images) à côté du script
-        script_dir = Path(__file__).parent.resolve()
-        latex_dir = script_dir / "LaTeX"
-        latex_dir.mkdir(parents=True, exist_ok=True)
-        images_dir = latex_dir / "images"
-        images_dir.mkdir(parents=True, exist_ok=True)
+            # Préparer dossiers de sortie
+            latex_dir = self.output_base_dir / "LaTeX"
+            latex_dir.mkdir(parents=True, exist_ok=True)
+            
+            images_dir = latex_dir / "images"
+            images_dir.mkdir(parents=True, exist_ok=True)
 
-        # Extraire et sauvegarder les images du document
-        image_map = self._extract_images(doc, images_dir)
+            logger.info(f" Fichiers LaTeX → {latex_dir}")
 
-        # Traiter le document en disposant de la map d'images
-        document_data = self._process_document(doc, doc_title, image_map)
+            # Extraire et sauvegarder les images du document
+            image_map = self._extract_images(doc, images_dir)
 
-        # Nom du fichier .tex basé sur le nom du docx source
-        tex_filename = f"{Path(docx_path).stem}.tex"
-        final_latex_path = latex_dir / tex_filename
+            # Traiter le document
+            document_data = self._process_document(doc, doc_title, image_map)
 
-        self._write_latex_file(str(final_latex_path), document_data)
+            # Nom du fichier .tex
+            tex_filename = f"{doc_title}.tex"
+            final_latex_path = latex_dir / tex_filename
 
-        logger.info(f"Conversion terminée: {final_latex_path}")
+            self._write_latex_file(str(final_latex_path), document_data)
 
-        # Compiler en PDF si demandé (le PDF sera déplacé dans un dossier dédié 'PDF')
-        pdf_result = None
-        if compile_pdf:
-            pdf_path = self._compile_to_pdf(str(final_latex_path))
-            if pdf_path:
-                # Créer dossier PDF à côté du script
-                pdf_dir = script_dir / "PDF"
-                pdf_dir.mkdir(parents=True, exist_ok=True)
+            logger.info(f" Fichier LaTeX créé: {tex_filename}")
 
-                pdf_file = Path(pdf_path)
-                target_pdf_path = pdf_dir / pdf_file.name
-                try:
-                    pdf_file.replace(target_pdf_path)
-                    pdf_result = str(target_pdf_path)
-                except Exception:
+            # Compiler en PDF si demandé
+            pdf_result = None
+            if compile_pdf:
+                pdf_path = self._compile_to_pdf(str(final_latex_path))
+                if pdf_path:
+                    # Créer dossier PDF
+                    pdf_dir = self.output_base_dir / "PDF"
+                    pdf_dir.mkdir(parents=True, exist_ok=True)
+
+                    pdf_file = Path(pdf_path)
+                    target_pdf_path = pdf_dir / pdf_file.name
+                    
                     try:
-                        # Fallback: copy and remove original
-                        import shutil
-                        shutil.copy2(str(pdf_file), str(target_pdf_path))
-                        pdf_file.unlink()
+                        # Tenter de déplacer
+                        pdf_file.replace(target_pdf_path)
                         pdf_result = str(target_pdf_path)
+                        logger.info(f" PDF créé: {pdf_file.name}")
                     except Exception as e:
-                        logger.warning(f"Impossible de déplacer le PDF: {e}")
-
-                if pdf_result:
-                    logger.info(f"PDF généré: {pdf_result}")
+                        # Fallback: copier
+                        try:
+                            import shutil
+                            shutil.copy2(str(pdf_file), str(target_pdf_path))
+                            pdf_file.unlink()
+                            pdf_result = str(target_pdf_path)
+                            logger.info(f" PDF créé: {pdf_file.name}")
+                        except Exception as e2:
+                            logger.warning(f" Impossible de déplacer le PDF: {e2}")
+                            pdf_result = str(pdf_path)
                 else:
-                    # If we couldn't move/copy, still return original path
-                    logger.info(f"PDF généré: {pdf_path}")
-                    pdf_result = str(pdf_path)
-            else:
-                logger.warning("La compilation PDF a échoué")
+                    logger.warning(" La compilation PDF a échoué")
 
-        # Retourner le chemin du PDF généré (ou None si non généré). Si la compilation
-        # n'était pas demandée, retourner le chemin du fichier .tex généré.
-        if compile_pdf:
-            return pdf_result
-        return str(final_latex_path)
+            # Afficher un message de succès avec l'emplacement
+            if pdf_result:
+                logger.info(f" PDF disponible dans: {self.output_base_dir / 'PDF'}")
+                return pdf_result
+            else:
+                logger.info(f" LaTeX disponible dans: {latex_dir}")
+                return str(final_latex_path)
+                
+        except Exception as e:
+            logger.error(f" Erreur lors de la conversion: {e}")
+            import traceback
+            logger.debug(traceback.format_exc())
+            raise
 
     def _compile_to_pdf(self, latex_path: str) -> Optional[str]:
         """

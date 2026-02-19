@@ -66,6 +66,30 @@ class ConverterGUI:
         
         # Rediriger les prints
         self.redirect_output()
+
+    
+    def show_output_location(self):
+        """Affiche l'emplacement des fichiers de sortie."""
+        output_dir = self.converter.output_base_dir
+        
+        # Créer un message formaté
+        location_msg = f"\n{'='*50}\n"
+        location_msg += " EMPLACEMENT DES FICHIERS DE SORTIE\n"
+        location_msg += f"{'='*50}\n"
+        location_msg += f"Dossier principal: {output_dir}\n"
+        location_msg += f"Fichiers LaTeX (.tex): {output_dir / 'LaTeX'}\n"
+        location_msg += f"Fichiers PDF: {output_dir / 'PDF'}\n"
+        location_msg += f"Images: {output_dir / 'LaTeX' / 'images'}\n"
+        location_msg += f"{'='*50}\n\n"
+        
+        self.log_message(location_msg, 'info')
+        
+        # Sur macOS, proposer d'ouvrir le dossier
+        if sys.platform == 'darwin':
+            self.log_message(" Astuce: Pour ouvrir ce dossier:", 'info')
+            self.log_message(f"   1. Ouvrez le Finder", 'info')
+            self.log_message(f"   2. Cmd+Shift+G puis collez: {output_dir}", 'info')
+            self.log_message("", 'info')
     
     def setup_styles(self):
         """Configure les styles de l'interface."""
@@ -134,7 +158,7 @@ class ConverterGUI:
         
         self.drop_label = tk.Label(
             drop_frame,
-            text="📁 Glissez vos fichiers .docx ici\nou cliquez pour parcourir",
+            text=" Glissez vos fichiers .docx ici\nou cliquez pour parcourir",
             font=('Arial', 12),
             bg=self.colors['drop_zone'],
             fg=self.colors['text_fg'],
@@ -335,6 +359,9 @@ class ConverterGUI:
         self.log_message(f"Début de la conversion de {total_files} fichier(s)", 'info')
         self.log_message(f"{'='*50}\n", 'info')
         
+        self.log_message(f" Les fichiers seront créés dans: {self.converter.output_base_dir}\n", 'info')
+
+
         success_count = 0
         error_count = 0
         
@@ -410,9 +437,12 @@ class ConverterGUI:
         sys.stdout = TextRedirector(self.log_text, "info")
         sys.stderr = TextRedirector(self.log_text, "error")
     
-    def run(self):
-        """Lance l'interface graphique."""
-        self.root.mainloop()
+def run(self):
+    """Lance l'interface graphique."""
+    # Afficher l'emplacement des fichiers au démarrage
+    self.root.after(500, self.show_output_location)
+    
+    self.root.mainloop()
 
 
 def main():
