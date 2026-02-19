@@ -437,12 +437,12 @@ class ConverterGUI:
         sys.stdout = TextRedirector(self.log_text, "info")
         sys.stderr = TextRedirector(self.log_text, "error")
     
-def run(self):
-    """Lance l'interface graphique."""
-    # Afficher l'emplacement des fichiers au démarrage
-    self.root.after(500, self.show_output_location)
-    
-    self.root.mainloop()
+    def run(self):
+        """Lance l'interface graphique."""
+        # Afficher l'emplacement des fichiers au démarrage
+        self.root.after(500, self.show_output_location)
+        
+        self.root.mainloop()
 
 
 def main():
